@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Based on static/3rd-party/index.html -->
+<head>
+  <meta charset="utf-8">
+  <title>{{ page-name }}</title>
+  <meta name="description" content="{{ seo-description }}">
+  <meta name="author" content="{{ seo-author }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/3rd-party/littlelink/css/normalize.css">
+  <link rel="stylesheet" href="static/3rd-party/littlelink/css/skeleton-light.css">
+  <link rel="stylesheet" href="static/3rd-party/littlelink/css/brands.css">
+  <link rel="icon" type="image/png" href="{{ avatar-path }}">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="column" style="margin-top: 10%">
+	<img src="{{ avatar-path }}">
+	<h1>{{ page-name }}</h1>
+	<p>{{ bio|safe }}</p>
+	{% for link in links %}
+	<a class="button button-{{ link.icon }}" href="{{ link.link }}">
+          <img class="icon" src="static/3rd-party/littlelink/icons/{{ link.icon }}">
+          {{ link.text }}
+        </a>
+	<br>
+	{% endfor %}
+        <br>
+        <br>
+	<p>{{ footer|safe }}</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
