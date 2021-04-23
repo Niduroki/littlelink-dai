@@ -1,0 +1,6 @@
+[submodule "littlelink"]
+	path = static/3rd-party/littlelink
+	url = https://github.com/sethcottle/littlelink.git
+[submodule "static/3rd-party/littlelink"]
+	path = static/3rd-party/littlelink
+	url = https://github.com/sethcottle/littlelink.git
