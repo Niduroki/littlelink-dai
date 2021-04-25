@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="column" style="margin-top: 10%">
+                <img src="TODO image">
+                <h1>Link Page</h1>
+                <p>{% trans %}todo description{% endtrans %}</p>
+                <br>
+                <br>
+                <div id="login-form">
+                    {% if pw == "1" %}
+                        <span class="btn red">{% trans %}Wrong password!{% endtrans %}</span>
+                    {% elif pw == "2" %}
+                        <span class="btn green">{% trans %}Password changed, please login again!{% endtrans %}</span>
+                    {% endif %}
+                    <form method="post" action="/">
+                        <h3>{% trans %}Login{% endtrans %}</h3>
+                        {% trans %}Username:{% endtrans %} <input type="text" name="login_username"><br>
+                        {% trans %}Password:{% endtrans %} <input type="password" name="login_password"><br>
+                        <input type="submit">
+                    </form>
+                </div>
+                <br>
+                <br>
+                <div id="registration-form">
+                    <form method="post" action="/">
+                        <h3>{% trans %}Registration{% endtrans %}</h3>
+                        {% trans %}Username:{% endtrans %} <input type="text" name="register_username"><br>
+                        {% trans %}Password:{% endtrans %} <input type="password" name="register_password1"><br>
+                        {% trans %}Repeat Password:{% endtrans %} <input type="password" name="register_password2"><br>
+                        <input type="submit">
+                    </form>
+                </div>
+                <br>
+                <br>
+                <p>
+                    V 0.1.0 –
+                    <a href="https://github.com/Niduroki/littlelink-dai">Source</a>
+                </p>
+            </div>
+        </div>
+    </div>
+{% endblock %}

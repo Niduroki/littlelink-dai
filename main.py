@@ -61,39 +61,40 @@ def index():
         else:
             pass  # TODO do the initial setup
     else:
-        if request.method == "POST":
-            abort(400)  # If there is no initial setup to do we don't accept POST
-        return render_template("index.html")
-
-
-@app.route('/manage/login/', methods=["get", "post"])
-def login():
-    if request.method == "GET":
-        if check_login(session):
-            return redirect(url_for('.manage'))
-        else:
-            pw = "0"
+        if request.method == "GET":
+            wrongpw = False
             if request.args.get('pw') == "1":
                 wrongpw = True
-            return render_template("login.html", wrongpw=wrongpw)
-    if request.method == "POST":
-        # Check password
-        try:
-            username = request.form['username']
-            password = request.form['password']
-        except KeyError:
-            abort(400)
-            raise
-
-        db_session = db.get_session()
-        user = db_session.query(db.Users).filter_by(username=username).one()
-        
-        if pbkdf2_sha256.verify(password, user.password):
-            session["login"] = True
-            session["user"] = user
-            return redirect(url_for('.manage'))
+            return render_template("index.html", wrongpw=wrongpw, logged_in=False)  # TODO set logged in
+            # TODO also have a switch for: Should we show the registration form?
         else:
-            return redirect('/?pw=1')
+            # Check password
+            try:
+                username = request.form['login_username']
+                password = request.form['login_password']
+            except KeyError:
+                if False:  # TODO check if registration is not allowed
+                    abort(400)
+                    raise
+                try:
+                    username = request.form['register_username']
+                    password1 = request.form['register_password1']
+                    password2 = request.form['register_password2']
+                    # TODO registration logic goes in here
+                except KeyError:
+                    abort(400)
+                    raise
+
+            # Continue with login logic
+            db_session = db.get_session()
+            user = db_session.query(db.Users).filter_by(username=username).one()
+
+            if pbkdf2_sha256.verify(password, user.password):
+                session["login"] = True
+                session["user"] = user
+                return redirect(url_for('.manage'))
+            else:
+                return redirect(url_for('.index') + '?pw=1')
 
 
 @app.route('/manage/logout/')
@@ -164,14 +165,14 @@ def admin_config():
 @app.route('/manage/')  # Manage links site (for users and admins)
 def manage():
     if not check_login(session):
-        abort(403)
+        return redirect(url_for('.login'))
     # TODO
 
 
 @app.route('/manage/create/', methods=["get", "post"])  # Create new site
 def manage_create_site():
     if not check_login(session):
-        abort(403)
+        return redirect(url_for('.login'))
 
     if request.method == "GET":
         return render_template("create_site.html")
@@ -339,11 +340,6 @@ def manage_pwchange():
         db_session.commit()
         
         return redirect(url_for(".manage_pwchange") + "?success=1")
-
-
-@app.route('/manage/register/', methods=["get", "post"])  # Register
-def manage_register():
-    pass  # TODO
 
 
 @app.route('/<string:name>/')  # Actual site
