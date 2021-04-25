@@ -67,7 +67,7 @@ class Links(Base):
     site = relationship("Sites", back_populates="links")
 
 
-Users.sites = relationship("Sites", back_populates="user")
+Users.sites = relationship("Sites", back_populates="owner")
 Sites.links = relationship("Links", back_populates="site")
 
 

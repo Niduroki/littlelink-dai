@@ -46,20 +46,36 @@ def check_login(session):
 
 def is_admin(session):
     if check_login(session):
-        return session["user"].admin
-    # db_session = db.get_session()
-    # user = db_session.query(db.Users).filter_by(username=...).one()
+        db_session = db.get_session()
+        user = db_session.query(db.Users).filter_by(username=session["user"]).one()
+        return user.admin
     return False
 
 
 @app.route('/', methods=["get", "post"])
 def index():
-    if False:  # Check if an admin exists
+    db_session = db.get_session()
+    admins = db_session.query(db.Users).filter_by(admin=True).all()
+    if not admins:  # Check if no admin exists
         # If there is no admin we need to do an initial setup now, and create one
         if request.method == "GET":
             return render_template("initial_setup.html")
         else:
-            pass  # TODO do the initial setup
+            try:
+                username = request.form['setup_username']
+                password1 = request.form['setup_password1']
+                password2 = request.form['setup_password2']
+            except KeyError:
+                abort(400)
+                raise
+            # Create the initial admin
+            if password1 != password2:
+                return # TODO error out
+            pwhash = pbkdf2_sha256.encrypt(password1, rounds=200000, salt_size=16)
+            admin_obj = db.Users(username=username, password=pwhash, admin=True)
+            db_session.add(admin_obj)
+            db_session.commit()
+            return redirect(url_for('.index'))
     else:
         if request.method == "GET":
             wrongpw = False
@@ -86,12 +102,11 @@ def index():
                     raise
 
             # Continue with login logic
-            db_session = db.get_session()
             user = db_session.query(db.Users).filter_by(username=username).one()
 
             if pbkdf2_sha256.verify(password, user.password):
                 session["login"] = True
-                session["user"] = user
+                session["user"] = user.username
                 return redirect(url_for('.manage'))
             else:
                 return redirect(url_for('.index') + '?pw=1')
@@ -100,10 +115,10 @@ def index():
 @app.route('/manage/logout/')
 def logout():
     if not check_login(session):
-        abort(403)
+        return redirect(url_for('.index'))
     session.pop("login", None)
     session.pop("user", None)
-    return redirect('.index')
+    return redirect(url_for('.index'))
 
 
 @app.route('/manage/admin/')  # Admin site (should be a very dense list of all users, and sites)
