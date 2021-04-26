@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{% trans %}Linkpage Manage{% endtrans %}{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="column" style="margin-top: 10%">
+                <img src="TODO image">
+                <h1>{% trans %}Manage your sites{% endtrans %}</h1>
+                <p>{% trans name=session.user %}Hello {{ name }}.{% endtrans %}</p>
+                <p>{% trans trimmed %}
+                    Manage your sites, and add new sites.
+                    {% endtrans %}</p>
+                <br>
+                <br>
+                <h2>{% trans %}Your existing sites{% endtrans %}</h2>
+                {% for site in user.sites %}
+                    {# TODO #}
+                {% else %}
+                    <p>{% trans %}No sites yet. Create one!{% endtrans %}</p>
+                {% endfor %}
+                <a class="button button-site" href="{{ url_for('.manage_create_site') }}">
+                    <img class="icon" src="/static/3rd-party/littlelink/icons/site.png">
+                    {% trans %}Create a new site{% endtrans %}
+                </a>
+                {% if user.admin %}
+                    <br>
+                    <a class="button button-admin" href="{{ url_for ('.admin') }}">
+                        <img class="icon" src="/static/3rd-party/littlelink/icons/admin.png">
+                        {% trans %}Admin overview{% endtrans %}
+                    </a>
+                {% endif %}
+                <br>
+                <a class="button button-logout" href="{{ url_for ('.logout') }}">
+                    <img class="icon" src="/static/3rd-party/littlelink/icons/logout.png">
+                    {% trans %}Logout{% endtrans %}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

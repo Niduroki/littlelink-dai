@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Linkpage Admin{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="column" style="margin-top: 10%">
+                <img src="TODO image">
+                <h1>{% trans %}Admin Setting{% endtrans %}</h1>
+                <h2>{% trans %}Users{% endtrans %}</h2>
+                {% for user in users %}
+                    <a class="button button-user" href="{{ url_for('.admin_user_detail', user=user.username) }}">
+                        <img class="icon" src="/static/3rd-party/littlelink/icons/user.png">
+                        {{ user.username }} – Admin: {{ user.admin }} – {% trans %}Edit{% endtrans %}
+                    </a>
+                    <br>
+                {% endfor %}
+                <a class="button button-user" href="{{ url_for('.admin_user_create') }}">
+                    <img class="icon" src="/static/3rd-party/littlelink/icons/user.png">
+                    {% trans %}Create a new user{% endtrans %}
+                </a>
+                <br>
+                <h2>{% trans %}Sites{% endtrans %}</h2>
+                {% for site in sites %}
+                    <div>
+                        {{ site.name }} – Owner: {{ site.owner }}
+                    </div>
+                {% else %}
+                    <p>No sites yet.</p>
+                {% endfor %}
+                <br>
+                <a class="button button-manage" href="{{ url_for ('.manage') }}">
+                    <img class="icon" src="/static/3rd-party/littlelink/icons/manage.png">
+                    {% trans %}Back to manage site{% endtrans %}
+                </a>
+                <br>
+                <a class="button button-logout" href="{{ url_for ('.logout') }}">
+                    <img class="icon" src="/static/3rd-party/littlelink/icons/logout.png">
+                    {% trans %}Logout{% endtrans %}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

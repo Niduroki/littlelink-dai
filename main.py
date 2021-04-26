@@ -81,35 +81,61 @@ def index():
             wrongpw = False
             if request.args.get('pw') == "1":
                 wrongpw = True
-            return render_template("index.html", wrongpw=wrongpw, logged_in=False)  # TODO set logged in
-            # TODO also have a switch for: Should we show the registration form?
+
+            try:
+                registration_key = db_session.query(db.Config).filter_by(key="registration").one()
+                registration_allowed = (registration_key.value == "True")
+            except NoResultFound:
+                registration_allowed = True  # Default to: Registration allowed
+
+            return render_template(
+                "index.html", wrongpw=wrongpw, logged_in=check_login(session),
+                registration_allowed=registration_allowed
+            )
         else:
             # Check password
             try:
                 username = request.form['login_username']
                 password = request.form['login_password']
+
+                user = db_session.query(db.Users).filter_by(username=username).one()
+
+                if pbkdf2_sha256.verify(password, user.password):
+                    session["login"] = True
+                    session["user"] = user.username
+                    return redirect(url_for('.manage'))
+                else:
+                    return redirect(url_for('.index') + '?pw=1')
             except KeyError:
-                if False:  # TODO check if registration is not allowed
+                try:
+                    registration_key = db_session.query(db.Config).filter_by(key="registration").one()
+                    registration_allowed = (registration_key.value == "True")
+                except NoResultFound:
+                    registration_allowed = True  # Default to: Registration allowed
+
+                if not registration_allowed:  # Check if registration is not allowed
                     abort(400)
                     raise
                 try:
+                    # Registration logic
                     username = request.form['register_username']
                     password1 = request.form['register_password1']
                     password2 = request.form['register_password2']
-                    # TODO registration logic goes in here
+
+                    if password1 != password2:
+                        return  # TODO error out
+
+                    pwhash = pbkdf2_sha256.encrypt(password1, rounds=200000, salt_size=16)
+                    user_obj = db.Users(username=username, password=pwhash, admin=False)
+                    db_session.add(user_obj)
+                    db_session.commit()
+                    session["login"] = True
+                    session["user"] = user_obj.username
+                    return redirect(url_for('.manage'))
+
                 except KeyError:
                     abort(400)
                     raise
-
-            # Continue with login logic
-            user = db_session.query(db.Users).filter_by(username=username).one()
-
-            if pbkdf2_sha256.verify(password, user.password):
-                session["login"] = True
-                session["user"] = user.username
-                return redirect(url_for('.manage'))
-            else:
-                return redirect(url_for('.index') + '?pw=1')
 
 
 @app.route('/manage/logout/')
@@ -143,28 +169,28 @@ def admin_user_create():
 
 
 @app.route('/manage/admin/user/<string:user>/', methods=["get", "post"])  # User-details (e.g.: What sites did they create)
-def admin_user_detail():
+def admin_user_detail(user):
     if not is_admin(session):
         abort(403)
     # TODO
 
 
 @app.route('/manage/admin/user/<string:user>/delete/', methods=["post"])
-def admin_user_delete():
+def admin_user_delete(user):
     if not is_admin(session):
         abort(403)
     # TODO
 
 
 @app.route('/manage/admin/site/<string:name>/', methods=["get", "post"])  # Details about site
-def admin_site_detail():
+def admin_site_detail(name):
     if not is_admin(session):
         abort(403)
     # TODO
 
 
 @app.route('/manage/admin/site/<string:name>/delete/', methods=["post"])
-def admin_site_delete():
+def admin_site_delete(name):
     if not is_admin(session):
         abort(403)
     # TODO
@@ -181,7 +207,10 @@ def admin_config():
 def manage():
     if not check_login(session):
         return redirect(url_for('.login'))
-    # TODO
+
+    db_session = db.get_session()
+    user = db_session.query(db.Users).filter_by(username=session["user"]).one()
+    return render_template("manage.html", user=user)
 
 
 @app.route('/manage/create/', methods=["get", "post"])  # Create new site
