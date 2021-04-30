@@ -30,6 +30,11 @@
                     </a>
                 {% endif %}
                 <br>
+                <a class="button button-password" href="{{ url_for ('.manage_pwchange') }}">
+                    <img class="icon" src="/static/3rd-party/littlelink/icons/password.png">
+                    {% trans %}Change your password{% endtrans %}
+                </a>
+                <br>
                 <a class="button button-logout" href="{{ url_for ('.logout') }}">
                     <img class="icon" src="/static/3rd-party/littlelink/icons/logout.png">
                     {% trans %}Logout{% endtrans %}

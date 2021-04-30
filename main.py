@@ -354,7 +354,7 @@ def manage_pwchange():
         abort(403)
     
     if request.method == "GET":
-        if request.args.get('wrong') == "1":
+        if request.args.get('wrongpw') == "1":
             wrongpw = True
         else:
             wrongpw = False
@@ -364,17 +364,20 @@ def manage_pwchange():
         else:
             changed = False
 
-        return render_template("pwchange.html", wrongpw=wrongpw, changed=changed)
+        return render_template("pwchange.html", wrongpw=wrongpw)
     elif request.method == "POST":
         try:
+            old_password = request.form['old-password']
             password = request.form['password']
             password2 = request.form['password2']
         except KeyError:
             abort(400)
             raise
 
+        # TODO check old password
+
         if password != password2:
-            return redirect(url_for(".manage_pwchange") + "?wrong=1")
+            return redirect(url_for(".manage_pwchange") + "?wrongpw=1")
         
         pwhash = pbkdf2_sha256.encrypt(password, rounds=200000, salt_size=16)
 
@@ -383,7 +386,7 @@ def manage_pwchange():
         user.password = pwhash
         db_session.commit()
         
-        return redirect(url_for(".manage_pwchange") + "?success=1")
+        return redirect(url_for(".manage") + "?pwchange_success=1")
 
 
 @app.route('/<string:name>/')  # Actual site

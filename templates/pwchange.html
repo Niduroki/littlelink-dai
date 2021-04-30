@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{% trans %}Change password{% endtrans %}{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="column" style="margin-top: 10%">
+                <img src="TODO image">
+                <h1>{% trans %}Change your password{% endtrans %}</h1>
+                <a class="button button-manage" href="{{ url_for ('.manage') }}">
+                    <img class="icon" src="static/3rd-party/littlelink/icons/manage.png">
+                    {% trans %}Back to manage page{% endtrans %}
+                </a>
+                <br>
+                <div id="pwchange-form">
+                    {% if wrongpw %}
+                        <span class="btn red">{% trans %}Passwords do not match!{% endtrans %}</span>
+                    {% endif %}
+                    <form method="post" action="/">
+                        {% trans %}Old password:{% endtrans %} <input type="password" name="old-password"><br>
+                        {% trans %}New password:{% endtrans %} <input type="password" name="password"><br>
+                        {% trans %}Repeat new password:{% endtrans %} <input type="password" name="password2"><br>
+                        <input type="submit">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
