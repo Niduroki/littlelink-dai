@@ -10,7 +10,7 @@
                 {% for user in users %}
                     <a class="button button-user" href="{{ url_for('.admin_user_detail', user=user.username) }}">
                         <img class="icon" src="/static/3rd-party/littlelink/icons/user.png">
-                        {{ user.username }} – Admin: {{ user.admin }} – {% trans %}Edit{% endtrans %}
+                        {{ user.username }}{% if user.admin %} {% trans %}(Admin){% endtrans %}{% endif %}
                     </a>
                     <br>
                 {% endfor %}
@@ -30,7 +30,7 @@
                 <br>
                 <a class="button button-manage" href="{{ url_for ('.manage') }}">
                     <img class="icon" src="/static/3rd-party/littlelink/icons/manage.png">
-                    {% trans %}Manage configuration settings{% endtrans %}
+                    {% trans %}Configuration settings{% endtrans %}
                 </a>
                 <br>
                 <a class="button button-manage" href="{{ url_for ('.manage') }}">

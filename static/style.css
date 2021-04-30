@@ -1,0 +1,33 @@
+.button:hover, .button:focus {
+    filter: brightness(90%)
+}
+
+.button-site {
+    color: #FFFFFF;
+    background-color: #72BA86;
+}
+
+.button-admin, .button-manage {
+    color: #FFFFFF;
+    background-color: #7272BA;
+}
+
+.button-password {
+    color: #FFFFFF;
+    background-color: #3030BB;
+}
+
+.button-logout {
+    color: #FFFFFF;
+    background-color: #303030;
+}
+
+.button-delete {
+    color: #FFFFFF;
+    background-color: #BB3030;
+}
+
+.button-user {
+    color: #000000;
+    background-color: #FFBBBB
+}

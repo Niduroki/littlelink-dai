@@ -6,11 +6,6 @@
             <div class="column" style="margin-top: 10%">
                 <img src="TODO image">
                 <h1>{% trans user=user.username %}Edit user {{ user }}{% endtrans %}</h1>
-                <a class="button button-admin" href="{{ url_for ('.admin') }}">
-                    <img class="icon" src="static/3rd-party/littlelink/icons/admin.png">
-                    {% trans %}Back to admin page{% endtrans %}
-                </a>
-                <br>
                 <div id="edit-user-form">
                     <form method="post">
                         {% trans %}Username:{% endtrans %} <input type="text" name="username" value="{{ user.username }}"><br>
@@ -23,6 +18,12 @@
                 <a id="delete-user" class="button button-delete" href="{{ url_for ('.admin_user_delete', user=user.username) }}">
                     <img class="icon" src="/static/3rd-party/littlelink/icons/delete.png">
                     {% trans %}Delete this user{% endtrans %}
+                    <!-- TODO this should probably have a "are you sure?" request -->
+                </a>
+                <br>
+                <a class="button button-admin" href="{{ url_for ('.admin') }}">
+                    <img class="icon" src="static/3rd-party/littlelink/icons/admin.png">
+                    {% trans %}Back to admin page{% endtrans %}
                 </a>
             </div>
         </div>
