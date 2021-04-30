@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{% trans %}Create a new user{% endtrans %}{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="column" style="margin-top: 10%">
+                <img src="TODO image">
+                <h1>{% trans user=user.username %}Edit user {{ user }}{% endtrans %}</h1>
+                <a class="button button-admin" href="{{ url_for ('.admin') }}">
+                    <img class="icon" src="static/3rd-party/littlelink/icons/admin.png">
+                    {% trans %}Back to admin page{% endtrans %}
+                </a>
+                <br>
+                <div id="edit-user-form">
+                    <form method="post">
+                        {% trans %}Username:{% endtrans %} <input type="text" name="username" value="{{ user.username }}"><br>
+                        {% trans %}Password:{% endtrans %} <input type="password" name="password"><small>{% trans %}Enter new password to change{% endtrans %}</small><br>
+                        {% trans %}Admin:{% endtrans %} <input type="checkbox" name="admin" {% if user.admin %}checked{% endif %}><br>
+                        <input type="submit">
+                    </form>
+                </div>
+                <br>
+                <a id="delete-user" class="button button-delete" href="{{ url_for ('.admin_user_delete', user=user.username) }}">
+                    <img class="icon" src="/static/3rd-party/littlelink/icons/delete.png">
+                    {% trans %}Delete this user{% endtrans %}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

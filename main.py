@@ -165,14 +165,63 @@ def admin_user_create():
     if request.method == "GET":
         return render_template("admin_create_user.html")
     else:
-        pass  # TODO do the creating
+        try:
+            username = request.form['username']
+            password = request.form['password']
+            make_admin = False
+            try:
+                make_admin = request.form['admin']
+                make_admin = make_admin == "on"
+            except KeyError:
+                pass
+
+            db_session = db.get_session()
+            pwhash = pbkdf2_sha256.encrypt(password, rounds=200000, salt_size=16)
+            user_obj = db.Users(username=username, password=pwhash, admin=make_admin)
+            db_session.add(user_obj)
+            db_session.commit()
+            return redirect(url_for('.admin_user_detail', user=username))
+
+        except KeyError:
+            abort(400)
 
 
 @app.route('/manage/admin/user/<string:user>/', methods=["get", "post"])  # User-details (e.g.: What sites did they create)
 def admin_user_detail(user):
     if not is_admin(session):
         abort(403)
-    # TODO
+
+    db_session = db.get_session()
+    try:
+        user_obj = db_session.query(db.Users).filter_by(username=user).one()
+    except NoResultFound:
+        abort(404)
+        raise
+
+    if request.method == "GET":
+        return render_template("admin_user_detail.html", user=user_obj)
+    else:
+        username = request.form['username']
+        password = request.form['password']
+        make_admin = False
+        try:
+            make_admin = request.form['admin']
+            make_admin = make_admin == "on"
+        except KeyError:
+            pass
+
+        if password != "":  # If the password is empty it has not been changed
+            pwhash = pbkdf2_sha256.encrypt(password, rounds=200000, salt_size=16)
+            user_obj.password = pwhash
+        if username != user:  # If the username has been changed
+            user_obj.username = username
+        if make_admin != user_obj.admin:
+            user_obj.admin = make_admin
+        db_session.commit()
+
+        # TODO add a success message
+        return redirect(url_for('.admin_user_detail', user=username))
+
 
 
 @app.route('/manage/admin/user/<string:user>/delete/', methods=["post"])
